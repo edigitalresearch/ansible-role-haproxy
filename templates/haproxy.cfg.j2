@@ -6,23 +6,28 @@ global
   {% endfor %}
   {% endif %}
 
-  {% for key, value in haproxy.global.items() %}
+  {% for key, value in haproxy.global %}
   {{ key }} {{ value }}
   {% endfor %}
 
 defaults
 
-  {% for key, value in haproxy.defaults.items() %}
+  {% for key, value in haproxy.defaults %}
+  {% if key == 'option' %}
+  {% for option, attribute in value %}
+    option {{ option }} {{ attribute }}
+  {% else %}
+    {{ key }} {{ value }}
+  {% endif %}
+  {% endfor %}
+
+  {% for key, value in haproxy.timeout %}
   {{ key }} {{ value }}
   {% endfor %}
 
-  {% for key, value in haproxy.timeout.items() %}
-  {{ key }} {{ value }}
-  {% endfor %}
-
-  {% for frontend in haproxy.frontend %}
+  {% for frontend in haproxy.frontend.items() %}
   frontend {{ frontend }}
-  {% for key, value in frontend.items() %}
+  {% for key, value in frontend %}
     {{ key }} {{ value }}
   {% endfor %}
   {% endfor %}
