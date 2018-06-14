@@ -16,6 +16,7 @@ defaults
   {% if key == 'option' %}
   {% for option, attribute in value %}
     option {{ option }} {{ attribute }}
+  {% endfor %}
   {% else %}
     {{ key }} {{ value }}
   {% endif %}
