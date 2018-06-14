@@ -4,32 +4,35 @@ haproxy:
    - /dev/log  local0
    - /dev/log  local1 notice
   global:
-    socket: /var/lib/haproxy/stats
+    pidfile: /var/run/haproxy.pid
     chroot:  /var/lib/haproxy
     user: haproxy
     group: haproxy
+    stats: socket /var/lib/haproxy/stats
   listen:
     stats:
       bind: '*:8181'
       stats:
         enable: ""
         uri: "/"
-        realm: "Haproxy\ Statistics"
+        realm: 'Haproxy Statistics'
         auth: haproxy:haproxy
   frontend:
     hafrontend:
       bind: '*:80'
       mode: 'http'
       option:
+        http-server-close:
       default_backend: "habackend"
   backend:
     habackend:
-      bind: '*'
+      bind: '*:80'
       mode: 'http'
       balance: 'roundrobin'
-      option: ''
-      reqadd: []
-      server: []
+      option:
+        forwardfor:
+      reqadd:
+      server:
   timeout:
     http-request: 10s
     queue: 1m

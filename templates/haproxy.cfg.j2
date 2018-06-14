@@ -1,11 +1,71 @@
 global
 
-  {% if haproxy.logs is defined %}
-  {% for log in haproxy.logs %}
+{% if haproxy.logs is defined %}
+{% for log in haproxy.logs %}
   log {{ log }}
-  {% endfor %}
-  {% endif %}
+{% endfor %}
+{% endif %}
 
-  {% for key, value in haproxy.global %}
+{% for key, value in haproxy.global.items() %}
   {{ key }} {{ value }}
-  {% endfor %}
+{% endfor %}
+
+defaults
+
+{% for key, value in haproxy.defaults.items() %}
+{% if key == 'option' %}
+{% for option, attribute in value.items() %}
+  option {{ option }} {{ attribute }}
+{% endfor %}
+{% else %}
+  {{ key }} {{ value }}
+{% endif %}
+{% endfor %}
+
+{% for key, value in haproxy.timeout.items() %}
+  timeout {{ key }} {{ value }}
+{% endfor %}
+
+{% for frontend, options in haproxy.frontend.items() %}
+frontend {{ frontend }}
+{% for key, value in options.items() %}
+{% if key == 'option' %}
+{% for option, attribute in value.items() %}
+  option {{ option }} {{ attribute }}
+{% endfor %}
+{% else %}
+  {{ key }} {{ value }}
+{% endif %}
+{% endfor %}
+{% endfor %}
+
+{% for backend, options in haproxy.backend.items() %}
+backend {{ backend }}
+{% for key, value in options.items() %}
+{% if key == 'option' or key == 'server' or key == 'reqadd' %}
+{% for option, attribute in value.items() %}
+{% if key == 'reqadd' %}
+  {{ key }} {{ option }}:{{ attribute }}
+{% else %}
+  {{ key }} {{ option }} {{ attribute }}
+{% endif %}
+{% endfor %}
+{% else %}
+  {{ key }} {{ value }}
+{% endif %}
+{% endfor %}
+{% endfor %}
+
+{% for listener, options in haproxy.listen.items() %}
+listen {{ listener }}
+{% for key, value in options.items() %}
+{% if key == 'stats' %}
+{% for option, attribute in value.items() %}
+  {{ key }} {{ option }} {{ attribute }}
+{% endfor %}
+{% else %}
+  {{ key }} {{ value }}
+{% endif %}
+{% endfor %}
+{% endfor %}
+
