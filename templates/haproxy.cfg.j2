@@ -6,49 +6,23 @@ global
   {% endfor %}
   {% endif %}
 
-  {% for key, value in haproxy.global %}
+  {% for key, value in haproxy.global.items() %}
   {{ key }} {{ value }}
   {% endfor %}
 
 defaults
 
-  {% for key, value in haproxy.defaults %}
+  {% for key, value in haproxy.defaults.items() %}
   {{ key }} {{ value }}
   {% endfor %}
 
-  {% for key, value in haproxy.timeout %}
+  {% for key, value in haproxy.timeout.items() %}
   {{ key }} {{ value }}
   {% endfor %}
 
   {% for frontend in haproxy.frontend %}
   frontend {{ frontend }}
-  {% for key, value in frontend %}
+  {% for key, value in frontend.items() %}
     {{ key }} {{ value }}
   {% endfor %}
   {% endfor %}
-
-  {% for backend in haproxy.backend %}
-  backend {{ backend }}
-  {% for key, value in backend %}
-    {% if value is mapping %}
-    {% for option in haproxy.backend[key] %}
-    {{ key }} {{ option }}
-    {% endfor %}
-    {% else %}
-    {{ key }} {{ value }}
-    {% endif %}
-  {% endfor %}
-  {% endfor %}
-
-{% for listener in haproxy.listen %}
-  listen {{ listener }}
-  {% for key, value in listener %}
-  {% if value is mapping %}
-  {% for property, attribute in value.items() %}
-      {{ property }} {{ attribute }}
-  {% endfor %}
-  {% else %}
-      {{ key }} {{ value }}
-  {% endif %}
- {% endfor %}
-{% endfor %}
