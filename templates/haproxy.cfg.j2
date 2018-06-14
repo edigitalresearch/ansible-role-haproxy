@@ -30,7 +30,7 @@ defaults
   {% for backend in haproxy.backend %}
   backend {{ backend }}
   {% for key, value in backend.items() %}
-    {% if value.items() is defined %}
+    {% if value is mapping %}
     {% for option in haproxy.backend[key] %}
     {{ key }} {{ option }}
     {% endfor %}
@@ -43,7 +43,7 @@ defaults
 {% for listener in haproxy.listen %}
   listen {{ listener }}
   {% for key, value in listener.items() %}
-  {% if value.items() is defined %}
+  {% if value is mapping %}
   {% for property, attribute in value.items() %}
       {{ property }} {{ attribute }}
   {% endfor %}
