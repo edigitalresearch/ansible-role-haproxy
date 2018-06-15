@@ -40,6 +40,7 @@ frontend {{ frontend }}
 {% endfor %}
 
 {% for backend, options in haproxy.backend.items() %}
+
 backend {{ backend }}
 {% for key, value in options.items() %}
 {% if key == 'option' or key == 'server' or key == 'reqadd' %}
