@@ -1,5 +1,6 @@
 ---
 haproxy:
+  certs_path: /etc/haproxy/certs
   logs:
    - /dev/log  local0
    - /dev/log  local1 notice
@@ -31,8 +32,8 @@ haproxy:
       balance: 'roundrobin'
       option:
         forwardfor:
-      reqadd:
-      server:
+      reqadd: {}
+      server: {}
   timeout:
     http-request: 10s
     queue: 1m

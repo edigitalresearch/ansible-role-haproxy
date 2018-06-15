@@ -22,3 +22,18 @@
 
 - name: HAProxy | Ensure HAProxy is started and enabled on boot.
   service: name=haproxy state=started enabled=yes
+
+- name: HAProxy | Create SSL directory folder
+  file:
+    path: "{{ haproxy.certs_path }}"
+    owner: haproxy
+    group: haproxy
+    mode: 0755
+    state: directory
+
+- name: HAProxy | Install SSL certificates
+  copy:
+    dest: "{{ haproxy.certs_path }}/{{ item.key }}.crt"
+    content: "{{ item.value.content }}"
+    mode: 0644
+  with_dict: "{{ vault_haproxy.certs | default({}) }}"
