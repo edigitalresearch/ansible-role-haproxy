@@ -1,75 +1,80 @@
-# Ansible Role: HAProxy
+# HAProxy Role for Ansible
 
-[![Build Status](https://travis-ci.org/geerlingguy/ansible-role-haproxy.svg?branch=master)](https://travis-ci.org/geerlingguy/ansible-role-haproxy)
+This is a role that installs a Haproxy service on RedHat/CentOS Linux servers.
+It requires a single host group, named `haproxy`.
 
-Installs HAProxy on RedHat/CentOS and Debian/Ubuntu Linux servers.
 
-**Note**: This role _officially_ supports HAProxy versions 1.4 or 1.5. Future versions may require some rework.
-
-## Requirements
-
-None.
-
-## Role Variables
+## Variables
 
 Available variables are listed below, along with default values (see `defaults/main.yml`):
+```---
+haproxy:
+  logs:
+   - /dev/log  local0
+   - /dev/log  local1 notice
+  global:
+    pidfile: /var/run/haproxy.pid
+    chroot:  /var/lib/haproxy
+    user: haproxy
+    group: haproxy
+    stats: socket /var/lib/haproxy/stats
+  listen:
+    stats:
+      bind: '*:8181'
+      stats:
+        enable: ""
+        uri: "/"
+        realm: 'Haproxy Statistics'
+        auth: haproxy:haproxy
+  frontend:
+    hafrontend:
+      bind: '*:80'
+      mode: 'http'
+      option:
+        http-server-close:
+      default_backend: "habackend"
+  backend:
+    habackend:
+      bind: '*:80'
+      mode: 'http'
+      balance: 'roundrobin'
+      option: # Dictionary of options and values
+        forwardfor:
+      reqadd: # Headers set by the Load Balancer
+        X-Forwarded-Proto: '\ https if { ssl_fc }'
+      server: # Dictionary of web servers and applicable ports, followed by any server arguments
+        web01: web01.example.com:80 check
+  timeout:
+    http-request: 10s
+    queue: 1m
+    connect: 10s
+    client: 1m
+    server: 1m
+    http-keep-alive: 10s
+    check: 10s
+  defaults:
+    mode: 'http'
+    log: 'global'
+    retries: 3
+    option:
+      httplog:
+      dontlognull:
+      http-server-close:
+      forwardfor: except 127.0.0.0/8
+      redispatch:
+```
 
-    haproxy_socket: /var/lib/haproxy/stats
+## Handlers
 
-The socket through which HAProxy can communicate (for admin purposes or statistics). To disable/remove this directive, set `haproxy_socket: ''` (an empty string).
+This role provides a single handler:
 
-    haproxy_chroot: /var/lib/haproxy
+* `restart haproxy`
 
-The jail directory where chroot() will be performed before dropping privileges. To disable/remove this directive, set `haproxy_chroot: ''` (an empty string). Only change this if you know what you're doing!
+## Example Task with role
 
-    haproxy_user: haproxy
-    haproxy_group: haproxy
-
-The user and group under which HAProxy should run. Only change this if you know what you're doing!
-
-    haproxy_frontend_name: 'hafrontend'
-    haproxy_frontend_bind_address: '*'
-    haproxy_frontend_port: 80
-    haproxy_frontend_mode: 'http'
-
-HAProxy frontend configuration directives.
-
-    haproxy_backend_name: 'habackend'
-    haproxy_backend_mode: 'http'
-    haproxy_backend_balance_method: 'roundrobin'
-    haproxy_backend_httpchk: 'HEAD / HTTP/1.1\r\nHost:localhost'
-
-HAProxy backend configuration directives.
-
-    haproxy_backend_servers:
-      - name: app1
-        address: 192.168.0.1:80
-      - name: app2
-        address: 192.168.0.2:80
-
-A list of backend servers (name and address) to which HAProxy will distribute requests.
-
-    haproxy_global_vars:
-      - 'ssl-default-bind-ciphers ABCD+KLMJ:...'
-      - 'ssl-default-bind-options no-sslv3'
-
-A list of extra global variables to add to the global configuration section inside `haproxy.cfg`.
-
-## Dependencies
-
-None.
-
-## Example Playbook
-
-    - hosts: balancer
-      sudo: yes
-      roles:
-        - { role: geerlingguy.haproxy }
-
-## License
-
-MIT / BSD
-
-## Author Information
-
-This role was created in 2015 by [Jeff Geerling](https://www.jeffgeerling.com/), author of [Ansible for DevOps](https://www.ansiblefordevops.com/).
+```  
+- name: Install and configure Haproxy
+  hosts: haproxy
+  roles:
+    - edr.haproxy
+```
