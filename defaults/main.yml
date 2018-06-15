@@ -18,22 +18,22 @@ haproxy:
         uri: "/"
         realm: 'Haproxy Statistics'
         auth: haproxy:haproxy
-  frontend:
-    hafrontend:
-      bind: '*:80'
-      mode: 'http'
-      option:
-        http-server-close:
-      default_backend: "habackend"
-  backend:
-    habackend:
-      bind: '*:80'
-      mode: 'http'
-      balance: 'roundrobin'
-      option:
-        forwardfor:
-      reqadd: {}
-      server: {}
+  # frontend:
+  #   httpfrontend:
+  #     bind: '*:80'
+  #     mode: 'http'
+  #     option:
+  #       http-server-close:
+  #     default_backend: "httpfrontend"
+  # backend:
+  #   httpfrontend:
+  #     bind: '*:80'
+  #     mode: 'http'
+  #     balance: 'roundrobin'
+  #     option:
+  #       forwardfor:
+  #     reqadd: {}
+  #     server: {}
   timeout:
     http-request: 10s
     queue: 1m

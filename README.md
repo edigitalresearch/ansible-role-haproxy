@@ -9,6 +9,7 @@ It requires a single host group, named `haproxy`.
 Available variables are listed below, along with default values (see `defaults/main.yml`):
 ```---
 haproxy:
+  certs_path: /etc/haproxy/certs
   logs:
    - /dev/log  local0
    - /dev/log  local1 notice
@@ -64,6 +65,19 @@ haproxy:
       redispatch:
 ```
 
+To add SSL certificates, combined the cert, root and private key into a vault file.
+```
+---
+  vault_haproxy:
+    certs:
+      example.com:
+        content: |
+          -----BEGIN CERTIFICATE-----
+          -----END CERTIFICATE-----
+          -----BEGIN PRIVATE KEY-----
+          -----END PRIVATE KEY-----
+
+```
 ## Handlers
 
 This role provides a single handler:
