@@ -36,4 +36,6 @@
     dest: "{{ haproxy.certs_path }}/{{ item.key }}.crt"
     content: "{{ item.value.content }}"
     mode: 0644
-  with_dict: "{{ vault_haproxy.certs | default({}) }}"
+  with_dict: "{{ vault_haproxy.certs }}"
+  when: vault_haproxy.certs is defined
+

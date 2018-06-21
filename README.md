@@ -19,6 +19,10 @@ haproxy:
     user: haproxy
     group: haproxy
     stats: socket /var/lib/haproxy/stats
+    ssl-default-bind-options: "no-sslv3"
+    ssl-default-bind-ciphers: "ECDHE-ECDSA-AES256-GCM-SHA384:ECDHE-RSA-AES256-GCM-SHA384:ECDHE-ECDSA-CHACHA20-POLY1305:ECDHE-RSA-CHACHA20-POLY1305:ECDHE-ECDSA-AES128-GCM-SHA256:ECDHE-RSA-AES128-GCM-SHA256:ECDHE-ECDSA-AES256-SHA384:ECDHE-RSA-AES256-SHA384:ECDHE-ECDSA-AES128-SHA256:ECDHE-RSA-AES128-SHA256K"
+    ssl-default-server-options: "no-sslv3"
+    ssl-default-server-ciphers: "ECDHE-ECDSA-AES256-GCM-SHA384:ECDHE-RSA-AES256-GCM-SHA384:ECDHE-ECDSA-CHACHA20-POLY1305:ECDHE-RSA-CHACHA20-POLY1305:ECDHE-ECDSA-AES128-GCM-SHA256:ECDHE-RSA-AES128-GCM-SHA256:ECDHE-ECDSA-AES256-SHA384:ECDHE-RSA-AES256-SHA384:ECDHE-ECDSA-AES128-SHA256:ECDHE-RSA-AES128-SHA256K"
   listen:
     stats:
       bind: '*:8181'
@@ -64,8 +68,9 @@ haproxy:
       forwardfor: except 127.0.0.0/8
       redispatch:
 ```
+The above will generate a TLS v1.2 only compliant server.
 
-To add SSL certificates, combined the cert, root and private key into a vault file.
+To add SSL certificates, combined the cert, intermediary and private key into a vault file.
 ```
 ---
   vault_haproxy:
