@@ -37,3 +37,4 @@
     content: "{{ item.value.content }}"
     mode: 0644
   with_dict: "{{ vault_haproxy.certs | default({}) }}"
+  when: "'vault_haproxy.certs' is defined"
